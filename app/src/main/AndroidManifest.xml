@@ -16,6 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".EpisodesActivity" />
+        <activity android:name=".AddEpisodeActivity"/>
     </application>
 
 </manifest>

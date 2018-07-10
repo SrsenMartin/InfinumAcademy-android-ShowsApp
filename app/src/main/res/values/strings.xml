@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Hw3_and_on</string>
+    <string name="shows">Shows</string>
+    <string name="noItemsString">Your list is empty</string>
+    <string name="title_activity_add_episode">AddEpisodeActivity</string>
+    <string name="add_episode">Add episode</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
 </resources>
