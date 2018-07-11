@@ -7,4 +7,8 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="save">Save</string>
+    <string name="back">Back</string>
+    <string name="Add">Add</string>
+    <string name="name_extra">Activity takes episode name as extra</string>
+    <string name="not_contained_show">Show not contained in database</string>
 </resources>

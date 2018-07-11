@@ -1,4 +1,4 @@
-package srsen.martin.fer.hr.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("srsen.martin.fer.hr.hw3_and_on", appContext.getPackageName());
+        assertEquals("srsen.martin.fer.hr.srsen.martin.infinum.srsen.martin.infinum.hw3_and_on", appContext.getPackageName());
     }
 }

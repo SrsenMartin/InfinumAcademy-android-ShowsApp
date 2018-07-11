@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "srsen.martin.fer.hr.hw3_and_on"
+        applicationId "srsen.martin.infinum.co.hw3_and_on"
         minSdkVersion 22
         targetSdkVersion 27
         versionCode 1
@@ -15,6 +15,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 

@@ -1,38 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Toolbar
-        android:id="@+id/toolbar"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/episodesToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/baseColor"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
-
-        <ImageView
-            android:id="@+id/backArrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_back_arrow"/>
-
-        <TextView
-            android:id="@+id/showName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="25sp"
-            android:layout_marginStart="40dp"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
-            android:layout_gravity="right" />
-
-    </Toolbar>
+        app:navigationIcon="@drawable/ic_back_arrow"
+        app:title=""
+        app:titleTextColor="@color/white"/>
 
     <LinearLayout
         android:id="@+id/listEmptyLayout"
@@ -60,7 +39,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/episodesRecyclerView"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/episodesToolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
