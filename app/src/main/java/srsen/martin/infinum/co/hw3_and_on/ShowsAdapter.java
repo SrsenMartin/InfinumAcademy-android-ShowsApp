@@ -23,12 +23,12 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TextView textView = holder.itemView.findViewById(R.id.showName);
 
-        String showName = showsList.get(position).getName();
-        textView.setText(showName);
+        Show show = showsList.get(position);
+        textView.setText(show.getName());
         textView.setOnClickListener(v -> {
             Context context = holder.itemView.getContext();
 
-            Intent intent = EpisodesActivity.newIntentInstance(context, showName);
+            Intent intent = EpisodesActivity.newIntentInstance(context, show.getID());
             context.startActivity(intent);
         });
     }

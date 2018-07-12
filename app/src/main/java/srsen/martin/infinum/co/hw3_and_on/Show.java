@@ -5,6 +5,9 @@ import java.util.List;
 
 public class Show {
 
+    private static int counter = 1;
+
+    private final int ID;
     private String name;
     private List<Episode> episodes;
 
@@ -16,6 +19,7 @@ public class Show {
         }
 
         this.name = name;
+        ID = counter++;
     }
 
     public List<Episode> getEpisodes() {
@@ -28,5 +32,9 @@ public class Show {
 
     public void addEpisode(Episode episode){
         episodes.add(episode);
+    }
+
+    public int getID(){
+        return ID;
     }
 }

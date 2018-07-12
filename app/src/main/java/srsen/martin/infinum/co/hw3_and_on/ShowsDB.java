@@ -1,35 +1,37 @@
 package srsen.martin.infinum.co.hw3_and_on;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ShowsDB {
 
-    private static Map<String, Show> showsList = new LinkedHashMap<>();
+    private static List<Show> showsList = new ArrayList<>();
 
     static{
-        showsList.put("Zabranjena ljubav", new Show("Zabranjena ljubav", null));
-        showsList.put("Ljubav je na selu", new Show("Ljubav je na selu", null));
-        showsList.put("Gossip girl", new Show("Gossip girl", null));
-        showsList.put("Pokemon", new Show("Pokemon", null));
-        showsList.put("Naruto", new Show("Naruto", null));
+        showsList.add(new Show("Zabranjena ljubav", null));
+        showsList.add(new Show("Ljubav je na selu", null));
+        showsList.add(new Show("Gossip girl", null));
+        showsList.add(new Show("Pokemon", null));
+        showsList.add(new Show("Naruto", null));
     }
 
     public static List<Show> getShows(){
-        Collection col =  showsList.values();
-
-        List<Show> showList = new ArrayList<>(col);
-        return showList;
+        return showsList;
 }
 
-    public static Show getShowByName(String name){
-        return showsList.get(name);
+    public static boolean containsShow(int ID){
+        for(Show show : showsList){
+            if(show.getID() == ID)  return true;
+        }
+
+        return false;
     }
 
-    public static boolean containsShow(String name){
-        return showsList.containsKey(name);
+    public static Show getShowById(int ID){
+        for(Show show : showsList){
+            if(show.getID() == ID)  return show;
+        }
+
+        return null;
     }
 }
