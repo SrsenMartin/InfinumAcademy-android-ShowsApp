@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:text="Zabranjena ljubav"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
 </LinearLayout>

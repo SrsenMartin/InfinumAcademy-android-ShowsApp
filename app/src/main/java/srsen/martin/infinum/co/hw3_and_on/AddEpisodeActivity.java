@@ -3,6 +3,7 @@ package srsen.martin.infinum.co.hw3_and_on;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,5 +56,26 @@ public class AddEpisodeActivity extends AppCompatActivity {
     public static Intent newIntentInstance(Context context){
         Intent intent = new Intent(context, AddEpisodeActivity.class);
         return intent;
+    }
+
+    @Override
+    public void onBackPressed() {
+        checkToGoBack();
+    }
+
+    private void checkToGoBack(){
+        String name = nameEdit.getText().toString();
+        String description = descriptionEdit.getText().toString();
+        if(name.isEmpty() && description.isEmpty()){
+            super.onBackPressed();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.back_action))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> super.onBackPressed())
+                .create()
+                .show();
     }
 }
