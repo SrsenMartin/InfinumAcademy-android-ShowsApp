@@ -2,12 +2,11 @@ package srsen.martin.infinum.co.hw3_and_on;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Show {
 
-    private static int counter = 1;
-
-    private final int ID;
+    private final String ID;
     private String name;
     private List<Episode> episodes;
 
@@ -19,11 +18,15 @@ public class Show {
         }
 
         this.name = name;
-        ID = counter++;
+        ID = UUID.randomUUID().toString();
     }
 
     public List<Episode> getEpisodes() {
         return episodes;
+    }
+
+    public void setEpisodes(List<Episode> episodes){
+        this.episodes = episodes;
     }
 
     public String getName() {
@@ -34,7 +37,7 @@ public class Show {
         episodes.add(episode);
     }
 
-    public int getID(){
+    public String getID(){
         return ID;
     }
 }

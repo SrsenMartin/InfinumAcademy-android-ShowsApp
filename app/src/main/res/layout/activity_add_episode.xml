@@ -1,49 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/addEpisodeToolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/baseColor"
-        app:navigationIcon="@drawable/ic_back_arrow"
-        app:titleTextColor="@color/white"
-        app:title="@string/add_episode"/>
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/nameEdit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/name"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="20dp"
-        android:inputType="text"/>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/addEpisodeToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/baseColor"
+            app:navigationIcon="@drawable/ic_back_arrow"
+            app:title="@string/add_episode"
+            app:titleTextColor="@color/white" />
 
-    <EditText
-        android:id="@+id/descriptionEdit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/description"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
-        android:inputType="text"/>
+        <ImageView
+            android:id="@+id/chosenImage"
+            android:layout_width="200dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="90dp" />
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        <RelativeLayout
+            android:id="@+id/addPhotoArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="120dp">
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:background="@color/baseColor"
-        android:textColor="@color/white"/>
-</LinearLayout>
+            <ImageView
+                android:id="@+id/addPhotoImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_add_photo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/addPhotoImage"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="@string/add_photo"
+                android:textColor="@color/baseColor" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/nameEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/addPhotoArea"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="70dp"
+            android:hint="@string/title"
+            android:inputType="textMultiLine" />
+
+        <TextView
+            android:id="@+id/episodeString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameEdit"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/seasonEpisode"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/chosenSeasonEpisode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/episodeString"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="15dp"
+            android:text="@string/unknown"
+            android:textColor="@color/baseColor" />
+
+        <EditText
+            android:id="@+id/descriptionEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chosenSeasonEpisode"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:hint="@string/description"
+            android:inputType="textMultiLine" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/descriptionEdit"
+            android:layout_alignParentBottom="true"
+            android:background="@color/baseColor"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:layout_marginTop="120dp"/>
+    </RelativeLayout>
+</ScrollView>

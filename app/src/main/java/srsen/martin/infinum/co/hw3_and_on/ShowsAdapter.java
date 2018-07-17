@@ -1,7 +1,6 @@
 package srsen.martin.infinum.co.hw3_and_on;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,9 +13,11 @@ import java.util.List;
 public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> {
 
     private List<Show> showsList;
+    private OnItemClickAction action;
 
-    public ShowsAdapter(List<Show> showsList){
+    public ShowsAdapter(List<Show> showsList, OnItemClickAction action){
         this.showsList = showsList;
+        this.action = action;
     }
 
     @Override
@@ -25,12 +26,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
 
         Show show = showsList.get(position);
         textView.setText(show.getName());
-        textView.setOnClickListener(v -> {
-            Context context = holder.itemView.getContext();
-
-            Intent intent = EpisodesActivity.newIntentInstance(context, show.getID());
-            context.startActivity(intent);
-        });
+        textView.setOnClickListener(v -> action.onItemClicked(holder.itemView.getContext(), show));
     }
 
     @NonNull
@@ -50,5 +46,9 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
         public ViewHolder(View view){
             super(view);
         }
+    }
+
+    public interface OnItemClickAction {
+        void onItemClicked(Context context, Show show);
     }
 }

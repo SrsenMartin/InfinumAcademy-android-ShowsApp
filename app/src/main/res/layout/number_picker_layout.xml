@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/textArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/sesionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/season"
+            android:textColor="@color/baseColor"
+            android:textSize="15sp"
+            android:layout_marginEnd="15dp"/>
+
+        <TextView
+            android:id="@+id/episodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/episode"
+            android:textColor="@color/baseColor"
+            android:textSize="15sp"
+            android:layout_marginStart="18dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pickerArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <NumberPicker
+            android:id="@+id/seasonPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="15dp"/>
+
+        <NumberPicker
+            android:id="@+id/episodePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/savePickedEpisode"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:background="@color/baseColor"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp" />
+</LinearLayout>

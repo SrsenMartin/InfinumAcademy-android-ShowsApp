@@ -14,20 +14,29 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class EpisodesActivity extends AppCompatActivity {
 
     public static final String EXTRA_SHOW_ID = "srsen.martin.infinum.co.showId";
     public static final int REQUEST_CODE_EPISODE = 99;
 
-    private RecyclerView recyclerView;
+    @BindView(R.id.episodesRecyclerView)
+    RecyclerView recyclerView;
+
+    @BindView(R.id.listEmptyLayout)
+    LinearLayout emptyShower;
+
     private List<Episode> episodes;
     private EpisodesAdapter adapter;
-    private LinearLayout emptyShower;
+    private Show show;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_episodes);
+        ButterKnife.bind(this);
 
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.episodesToolbar);
         setSupportActionBar(toolbar);
@@ -39,28 +48,30 @@ public class EpisodesActivity extends AppCompatActivity {
     private void setShowDetails() {
         checkExtras();
 
-        int showId = getIntent().getIntExtra(EXTRA_SHOW_ID, -1);
-        Show show = ShowsDB.getShowById(showId);
+        String showId = getIntent().getStringExtra(EXTRA_SHOW_ID);
+        show = ShowsDB.getShowById(showId);
         if(show == null)    return;
 
         getSupportActionBar().setTitle(show.getName());
 
         episodes = show.getEpisodes();
-        emptyShower = findViewById(R.id.listEmptyLayout);
         checkEmptyShowerIcon();
 
-        recyclerView = findViewById(R.id.episodesRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new EpisodesAdapter(episodes);
+        adapter = new EpisodesAdapter(episodes, (context, episode) -> {
+            Intent intent = EpisodeDetailsActivity.newIntentInstance(context, episode, show.getName());
+            context.startActivity(intent);
+        });
+
         recyclerView.setAdapter(adapter);
     }
 
     private void checkExtras() {
-        if(getIntent() == null || getIntent().getIntExtra(EXTRA_SHOW_ID, -1) == -1){
+        if(getIntent() == null || getIntent().getStringExtra(EXTRA_SHOW_ID) == null){
             Toast.makeText(this, getString(R.string.id_extra), Toast.LENGTH_SHORT).show();
             finish();
-        }else if(!ShowsDB.containsShow(getIntent().getIntExtra(EXTRA_SHOW_ID, -1))){
+        }else if(!ShowsDB.containsShow(getIntent().getStringExtra(EXTRA_SHOW_ID))){
             Toast.makeText(this, getString(R.string.not_contained_show), Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -93,16 +104,14 @@ public class EpisodesActivity extends AppCompatActivity {
         switch (requestCode){
             case REQUEST_CODE_EPISODE:
                 if(resultCode == RESULT_OK){
-                    String name = data.getStringExtra(AddEpisodeActivity.EXTRA_EPISODE_NAME);
-                    String description = data.getStringExtra(AddEpisodeActivity.EXTRA_EPISODE_DESCRIPTION);
-
-                    addEpisode(name, description);
+                    Episode episode = (Episode) data.getParcelableExtra(AddEpisodeActivity.EXTRA_EPISODE);
+                    addEpisode(episode);
                 }
         }
     }
 
-    private void addEpisode(String name, String description){
-        episodes.add(new Episode(name, description));
+    private void addEpisode(Episode episode){
+        episodes.add(episode);
         checkEmptyShowerIcon();
 
         adapter.notifyDataSetChanged();
@@ -116,15 +125,17 @@ public class EpisodesActivity extends AppCompatActivity {
         }
     }
 
-    public static Intent newIntentInstance(Context context, int showId){
+    public static Intent newIntentInstance(Context context, String showId){
         Intent intent = new Intent(context, EpisodesActivity.class);
         intent.putExtra(EXTRA_SHOW_ID, showId);
 
         return intent;
     }
 
-    public static Intent newIntentInstance(Context context){
-        Intent intent = new Intent(context, EpisodesActivity.class);
-        return intent;
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Util.saveShowEpisodes(this, show.getID());
     }
 }
