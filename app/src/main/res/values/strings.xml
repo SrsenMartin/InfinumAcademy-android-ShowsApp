@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Hw3_and_on</string>
+    <string name="shows">Shows</string>
+    <string name="noItemsString">Your list is empty</string>
+    <string name="title_activity_add_episode">AddEpisodeActivity</string>
+    <string name="add_episode">Add episode</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+    <string name="Add">Add</string>
+    <string name="id_extra">Activity takes show ID as extra</string>
+    <string name="not_contained_show">Show not contained in database</string>
+    <string name="empty_fields">None of the fields can be empty</string>
+    <string name="back_action">You have unsaved changes, are you sure you want to go back?</string>
+    <string name="no">Edit episode</string>
+    <string name="yes">Go back</string>
 </resources>

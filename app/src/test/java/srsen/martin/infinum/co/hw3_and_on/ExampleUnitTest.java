@@ -1,4 +1,4 @@
-package srsen.martin.fer.hr.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on;
 
 import org.junit.Test;
 
