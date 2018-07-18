@@ -23,8 +23,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         List<Show> showsList = ShowsDB.getShows();
-        loadEpisodes(showsList);
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ShowsAdapter adapter = new ShowsAdapter(showsList, (context, show) -> {
@@ -33,11 +31,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recyclerView.setAdapter(adapter);
-    }
-
-    private void loadEpisodes(List<Show> showList){
-        for(Show show : showList){
-            Util.loadShowEpisodes(this, show.getID());
-        }
     }
 }

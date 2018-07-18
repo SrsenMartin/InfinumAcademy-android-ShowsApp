@@ -22,8 +22,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.io.IOException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -168,7 +166,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
         if(!Util.askPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.external_storage_permission,
                 REQUEST_CODE_PERMISSION_EXTERNAL_STORAGE)) return;
 
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
 
@@ -191,13 +189,6 @@ public class AddEpisodeActivity extends AppCompatActivity {
             case REQUEST_CODE_CHOOSE_IMAGE:
                 if(resultCode == RESULT_OK && data != null){
                     Uri content = data.getData();
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), content);
-                        content = Util.saveImageAndGetUri(this, bitmap);
-                    } catch (IOException e) {
-                        Toast.makeText(this, R.string.unable_to_photo, Toast.LENGTH_SHORT).show();
-                    }
-
                     setImage(content);
                 }else{
                     Toast.makeText(this, R.string.unable_to_photo, Toast.LENGTH_SHORT).show();
