@@ -30,4 +30,7 @@
     <string name="error_image">Error saving image</string>
     <string name="error_save_episodes">Error saving show episodes</string>
     <string name="error_load_episodes">Error loading episodes from file</string>
+    <string name="permission_needed">Permission needed for that action</string>
+    <string name="camera_unavailable">Camera not available</string>
+    <string name="error_file">Error creating file to save image</string>
 </resources>

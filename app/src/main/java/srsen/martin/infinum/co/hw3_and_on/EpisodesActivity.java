@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class EpisodesActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 
     @BindView(R.id.listEmptyLayout)
-    LinearLayout emptyShower;
+    ViewGroup emptyShower;
 
     private List<Episode> episodes;
     private EpisodesAdapter adapter;

@@ -1,9 +1,10 @@
 package srsen.martin.infinum.co.hw3_and_on;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,9 +14,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -29,25 +31,30 @@ public class Util {
                 == PERMISSION_GRANTED)   return true;
 
         if(ActivityCompat.shouldShowRequestPermissionRationale(context, permission)){
-            Toast.makeText(context, messageId, Toast.LENGTH_LONG).show();
-        }
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+            alert.setMessage(messageId);
+            alert.setOnDismissListener(dialog -> ActivityCompat.requestPermissions(context, new String[]{permission}, requestCode));
 
-        ActivityCompat.requestPermissions(context, new String[]{permission}, requestCode);
+            alert.create().show();
+        }else {
+            ActivityCompat.requestPermissions(context, new String[]{permission}, requestCode);
+        }
 
         return false;
     }
 
-    public static Uri saveImageAndGetUri(Context context, Bitmap imageBitmap){
-        String filename = UUID.randomUUID().toString();
+    public static File createImageFile(Context context) throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
 
-        try(FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)){
-            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            return Uri.fromFile(new File(context.getFilesDir(), filename));
-        } catch (IOException exc){
-            Toast.makeText(context, R.string.error_image, Toast.LENGTH_SHORT).show();
-        }
-
-        return null;
+        return image;
     }
 
     public static void saveShowEpisodes(Context context, String showID){

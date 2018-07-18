@@ -3,11 +3,11 @@ package srsen.martin.infinum.co.hw3_and_on;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,6 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +54,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
     private int selectedEpisode;
     private int selectedSeason;
     private Uri imageUri;
+    private boolean imageSet;
 
     public static final String EXTRA_EPISODE = "srsen.martin.infinum.co.episode";
     public static final int REQUEST_CODE_TAKE_IMAGE = 199;
@@ -78,8 +82,6 @@ public class AddEpisodeActivity extends AppCompatActivity {
     }
 
     private void restoreState(Bundle savedInstanceState){
-        nameEdit.setText(savedInstanceState.getString(SAVE_NAME_KEY));
-        descriptionEdit.setText(savedInstanceState.getString(SAVE_DESCRIPTION_KEY));
         selectedEpisode = savedInstanceState.getInt(SAVE_EPISODE_NUMBER_KEY);
         selectedSeason = savedInstanceState.getInt(SAVE_SEASON_NUMBER_KEY);
         imageUri = savedInstanceState.getParcelable(SAVE_IMAGE_KEY);
@@ -97,7 +99,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
         String name = nameEdit.getText().toString();
         String description = descriptionEdit.getText().toString();
 
-        if(name.isEmpty() || description.isEmpty() || chosenEpisodeSeason.getText().equals("Unknown") || imageUri == null){
+        if(name.isEmpty() || description.isEmpty() || chosenEpisodeSeason.getText().equals("Unknown") || !imageSet){
             Toast.makeText(this, getString(R.string.empty_fields), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -133,7 +135,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    @OnClick(R.id.chosenSeasonEpisode)
+    @OnClick(R.id.chooseEpisode)
     void choseEpisodeNumber(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_AppCompat_Dialog);
         View dialogView = getLayoutInflater().inflate(R.layout.number_picker_layout, null);
@@ -144,6 +146,10 @@ public class AddEpisodeActivity extends AppCompatActivity {
         episodePicker.setMinValue(1);
         seasonPicker.setMaxValue(20);
         episodePicker.setMaxValue(99);
+        if(selectedEpisode != 0){
+            seasonPicker.setValue(selectedSeason);
+            episodePicker.setValue(selectedEpisode);
+        }
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
@@ -159,6 +165,24 @@ public class AddEpisodeActivity extends AppCompatActivity {
                 REQUEST_CODE_PERMISSION_CAMERA)) return;
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) == null){
+            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File photoFile = null;
+        try {
+            photoFile = Util.createImageFile(this);
+        } catch (IOException ex) {
+            Toast.makeText(this, R.string.error_file, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        imageUri = FileProvider.getUriForFile(this,
+                "srsen.martin.infinum.co.hw3_and_on.fileprovider",
+                photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
         startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE);
     }
 
@@ -178,8 +202,6 @@ public class AddEpisodeActivity extends AppCompatActivity {
         switch (requestCode){
             case REQUEST_CODE_TAKE_IMAGE:
                 if(resultCode == RESULT_OK){
-                    Bitmap imgBitmap = (Bitmap) data.getExtras().get("data");
-                    Uri imageUri = Util.saveImageAndGetUri(this, imgBitmap);
                     setImage(imageUri);
                 }else{
                     Toast.makeText(this, R.string.unable_to_photo, Toast.LENGTH_SHORT).show();
@@ -203,11 +225,15 @@ public class AddEpisodeActivity extends AppCompatActivity {
         Glide.with(this).load(imageUri).into(chosenImage);
 
         addPhotoArea.setVisibility(View.INVISIBLE);
+        imageSet = true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(grantResults.length == 0 || grantResults[0] == PERMISSION_DENIED)    return;
+        if(grantResults.length == 0 || grantResults[0] == PERMISSION_DENIED){
+            Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         switch(requestCode){
             case REQUEST_CODE_PERMISSION_CAMERA:
@@ -243,7 +269,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
         String name = nameEdit.getText().toString();
         String description = descriptionEdit.getText().toString();
 
-        if(name.isEmpty() && description.isEmpty() && chosenEpisodeSeason.getText().equals("Unknown") && imageUri == null){
+        if(name.isEmpty() && description.isEmpty() && chosenEpisodeSeason.getText().equals("Unknown") && !imageSet){
             super.onBackPressed();
             return;
         }
@@ -260,8 +286,6 @@ public class AddEpisodeActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(SAVE_NAME_KEY, nameEdit.getText().toString());
-        outState.putString(SAVE_DESCRIPTION_KEY, descriptionEdit.getText().toString());
         outState.putParcelable(SAVE_IMAGE_KEY, imageUri);
         outState.putInt(SAVE_EPISODE_NUMBER_KEY, selectedEpisode);
         outState.putInt(SAVE_SEASON_NUMBER_KEY, selectedSeason);
