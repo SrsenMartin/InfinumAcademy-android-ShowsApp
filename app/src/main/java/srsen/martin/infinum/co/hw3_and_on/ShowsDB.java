@@ -19,17 +19,17 @@ public class ShowsDB {
         return showsList;
 }
 
-    public static boolean containsShow(int ID){
+    public static boolean containsShow(String ID){
         for(Show show : showsList){
-            if(show.getID() == ID)  return true;
+            if(show.getID().equals(ID))  return true;
         }
 
         return false;
     }
 
-    public static Show getShowById(int ID){
+    public static Show getShowById(String ID){
         for(Show show : showsList){
-            if(show.getID() == ID)  return show;
+            if(show.getID().equals(ID))  return show;
         }
 
         return null;
