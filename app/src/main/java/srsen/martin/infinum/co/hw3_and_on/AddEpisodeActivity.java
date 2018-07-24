@@ -62,8 +62,6 @@ public class AddEpisodeActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_PERMISSION_CAMERA = 201;
     public static final int REQUEST_CODE_PERMISSION_EXTERNAL_STORAGE = 202;
 
-    private static final String SAVE_NAME_KEY = "save_name";
-    private static final String SAVE_DESCRIPTION_KEY = "save_description";
     private static final String SAVE_EPISODE_NUMBER_KEY = "save_episode_number";
     private static final String SAVE_SEASON_NUMBER_KEY = "save_season_number";
     private static final String SAVE_IMAGE_KEY = "save_image";

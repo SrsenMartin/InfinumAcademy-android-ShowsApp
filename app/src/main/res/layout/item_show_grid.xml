@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:background="?android:attr/selectableItemBackground">
+
+<android.support.v7.widget.CardView
+    android:id="@+id/imageExists"
+    android:layout_width="160dp"
+    android:layout_height="230dp"
+    app:cardCornerRadius="8dp">
+
+        <ImageView
+            android:id="@+id/showImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"/>
+</android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_below="@id/imageExists"
+        android:id="@+id/showName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zabranjena ljubav"
+        android:textSize="15sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"/>
+</RelativeLayout>

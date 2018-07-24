@@ -1,43 +1,50 @@
 package srsen.martin.infinum.co.hw3_and_on;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.google.gson.annotations.SerializedName;
 
 public class Show {
 
-    private final String ID;
-    private String name;
-    private List<Episode> episodes;
+    @SerializedName("_id")
+    private String ID;
 
-    public Show(String name, List<Episode> episodes){
-        if(episodes == null){
-            this.episodes = new ArrayList<>();
-        }else{
-            this.episodes = episodes;
-        }
+    @SerializedName("title")
+    private String title;
 
-        this.name = name;
-        ID = UUID.randomUUID().toString();
-    }
+    @SerializedName("imageUrl")
+    private String imageUrl;
 
-    public List<Episode> getEpisodes() {
-        return episodes;
-    }
+    @SerializedName("likesCount")
+    private int likes;
 
-    public void setEpisodes(List<Episode> episodes){
-        this.episodes = episodes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void addEpisode(Episode episode){
-        episodes.add(episode);
-    }
-
-    public String getID(){
+    public String getID() {
         return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 }

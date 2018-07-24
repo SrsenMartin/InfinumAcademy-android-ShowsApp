@@ -52,15 +52,15 @@ public class EpisodesActivity extends AppCompatActivity {
         show = ShowsDB.getShowById(showId);
         if(show == null)    return;
 
-        getSupportActionBar().setTitle(show.getName());
+        getSupportActionBar().setTitle(show.getTitle());
 
-        episodes = show.getEpisodes();
+        //episodes = show.getEpisodes();
         checkEmptyShowerIcon();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EpisodesAdapter(episodes, (context, episode) -> {
-            Intent intent = EpisodeDetailsActivity.newIntentInstance(context, episode, show.getName());
+            Intent intent = EpisodeDetailsActivity.newIntentInstance(context, episode, show.getTitle());
             context.startActivity(intent);
         });
 
@@ -136,6 +136,6 @@ public class EpisodesActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        Util.saveShowEpisodes(this, show.getID());
+        //Util.saveShowEpisodes(this, show.getID());
     }
 }

@@ -16,7 +16,7 @@ public class Initialization extends Application {
 
     private void loadEpisodes(List<Show> showList){
         for(Show show : showList){
-            Util.loadShowEpisodes(this, show.getID());
+            //Util.loadShowEpisodes(this, show.getID());
         }
     }
 }
