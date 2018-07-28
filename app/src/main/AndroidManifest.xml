@@ -5,9 +5,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:name=".Initialization"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,22 +24,22 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".LoginActivity"
+        <activity android:name=".activity.LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EpisodesActivity"
+        <activity android:name=".activity.EpisodesActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".AddEpisodeActivity"
+        <activity android:name=".activity.AddEpisodeActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".EpisodeDetailsActivity"
+        <activity android:name=".activity.EpisodeDetailsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+        <activity android:name=".activity.MainActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".RegisterActivity"
+        <activity android:name=".activity.RegisterActivity"
             android:screenOrientation="portrait"/>
     </application>
 

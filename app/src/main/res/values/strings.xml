@@ -21,7 +21,7 @@
     <string name="title">Title</string>
     <string name="season">Season</string>
     <string name="episode">Episode</string>
-    <string name="episode_shower">Season %d, Episode %d</string>
+    <string name="episode_shower">Season %s, Episode %s</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="unable_to_photo">Unable to load image</string>
@@ -59,5 +59,16 @@
     <string name="data_unable">Unable to load shows list.</string>
     <string name="error_show_loading">Error loading shows list.</string>
     <string name="logn_sucess">Login successful</string>
+    <string name="switch_view">Switch view</string>
+    <string name="try_again">Unknown error! Please try again.</string>
+    <string name="ok">OK</string>
+    <string name="database_empty">Database is empty.</string>
+    <string name="newEpisodeSeason">S%s Ep%s</string>
+    <string name="episodes">Episodes</string>
+    <string name="asleep">Someone has fallen asleep.</string>
+    <string name="don_t_wake_him_up">Don\'t wake him up.</string>
+    <string name="add_some_episodes">Add some episodes.</string>
+    <string name="no_connection">Connection not provided</string>
+    <string name="email_exists">Email already exists</string>
 
 </resources>

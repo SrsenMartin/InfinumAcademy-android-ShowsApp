@@ -6,5 +6,6 @@
     <color name="white">#FFFFFF</color>
     <color name="baseColor">#FF758C</color>
     <color name="black">#000000</color>
-    <color name="grey">#CCCCCC</color>
+    <color name="grey">#A9A9A9</color>
+    <color name="light_grey">#e0e0e0</color>
 </resources>

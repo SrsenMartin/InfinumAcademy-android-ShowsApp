@@ -5,9 +5,22 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +33,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import srsen.martin.infinum.co.hw3_and_on.database.repository.EpisodesRepository;
+import srsen.martin.infinum.co.hw3_and_on.database.repository.EpisodesRepositoryImpl;
+import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
+import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepositoryImpl;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -35,6 +53,24 @@ public class Util {
     );
 
     private static ApiService apiService;
+    private static ShowsRepository showsRepository;
+    private static EpisodesRepository episodesRepository;
+    private static Dialog progressDialog;
+
+
+    public static boolean isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public static Uri getImageUri(String imagePartUri){
+        return Uri.parse(Util.BASE_URL + imagePartUri.substring(1));
+    }
 
     public static OkHttpClient createOkHttpClient() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -44,13 +80,28 @@ public class Util {
                 .build();
     }
 
-
     public static ApiService initApiService(){
         if(apiService == null){
             apiService = getApiService();
         }
 
         return apiService;
+    }
+
+    public static ShowsRepository initShowsRepository(Context context){
+        if(showsRepository == null){
+            showsRepository = new ShowsRepositoryImpl(context);
+        }
+
+        return showsRepository;
+    }
+
+    public static EpisodesRepository initEpisodesRepository(Context context){
+        if(episodesRepository == null){
+            episodesRepository = new EpisodesRepositoryImpl(context);
+        }
+
+        return episodesRepository;
     }
 
     private static ApiService getApiService() {
@@ -66,6 +117,29 @@ public class Util {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+    }
+
+    public static void setImage(Context context, Uri uri, ImageView container, View defaultView){
+        if(defaultView == null){
+            Glide.with(context).load(uri).into(container);
+            return;
+        }
+
+        defaultView.setVisibility(View.VISIBLE);
+
+        Glide.with(context).load(uri).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                defaultView.setVisibility(View.VISIBLE);
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                defaultView.setVisibility(View.INVISIBLE);
+                return false;
+            }
+        }).into(container);
     }
 
     public static Dialog showProgress(Context context, String title, String message, boolean indeterminate, boolean cencelable) {

@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
-    android:background="?android:attr/selectableItemBackgroundBorderless">
-
-    <ImageView
-        android:id="@+id/episodeImage"
-        android:layout_width="75dp"
-        android:layout_height="75dp" />
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:background="?android:attr/selectableItemBackground">
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seasonEpisodeString"
+        android:textColor="@color/baseColor"
+        android:textSize="16sp"
+        android:text="S2 Ep6"
+        android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/episodeName"
+        android:layout_toEndOf="@id/seasonEpisodeString"
+        android:id="@+id/episodeTitle"
         android:layout_width="match_parent"
+        android:layout_toStartOf="@id/arrowIcon"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textSize="18sp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="25dp"/>
+        android:textSize="16sp"
+        android:layout_marginStart="25dp"
+        android:text="Episode title"
+        android:layout_centerVertical="true"/>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/arrowIcon"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:layout_marginStart="15dp"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

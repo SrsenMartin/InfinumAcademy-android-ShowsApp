@@ -1,4 +1,4 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,12 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
+
+import srsen.martin.infinum.co.hw3_and_on.R;
+import srsen.martin.infinum.co.hw3_and_on.models.Episode;
 
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHolder> {
 
@@ -25,14 +25,14 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull EpisodesAdapter.ViewHolder holder, int position) {
-        TextView textView = holder.itemView.findViewById(R.id.episodeName);
-        ImageView episodeImage = holder.itemView.findViewById(R.id.episodeImage);
+        TextView seasonEpisodeString = holder.itemView.findViewById(R.id.seasonEpisodeString);
+        TextView episodeTitle = holder.itemView.findViewById(R.id.episodeTitle);
 
         Episode episode = episodesList.get(position);
-        textView.setText(episode.getName());
-        Glide.with(holder.itemView).load(episode.getImageUri()).into(episodeImage);
+        seasonEpisodeString.setText(seasonEpisodeString(holder.itemView.getContext(), episode.getSeason(), episode.getEpisode()));
+        episodeTitle.setText(episode.getTitle());
 
-        holder.itemView.setOnClickListener(v -> action.onItemClicked(holder.itemView.getContext(), episode));
+        holder.itemView.setOnClickListener(v -> action.onItemClicked(episode));
     }
 
     @NonNull
@@ -47,6 +47,20 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
         return episodesList.size();
     }
 
+    private String seasonEpisodeString(Context context, String season, String episode){
+        return String.format(context.getString(R.string.newEpisodeSeason), season, episode);
+    }
+
+    public void addEpisode(Episode episode){
+        episodesList.add(episode);
+        notifyItemChanged(episodesList.size() - 1);
+    }
+
+    public void setEpisodesList(List<Episode> episodesList){
+        this.episodesList = episodesList;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder{
 
         public ViewHolder(View view){
@@ -55,6 +69,6 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
     }
 
     public interface OnItemClickAction {
-        void onItemClicked(Context context, Episode episode);
+        void onItemClicked(Episode episode);
     }
 }

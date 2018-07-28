@@ -1,6 +1,5 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.adapter;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
+
+import srsen.martin.infinum.co.hw3_and_on.R;
+import srsen.martin.infinum.co.hw3_and_on.Util;
+import srsen.martin.infinum.co.hw3_and_on.models.Show;
 
 public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> {
 
@@ -29,15 +30,18 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TextView textView = holder.itemView.findViewById(R.id.showName);
-        ImageView imageView = holder.itemView.findViewById(R.id.showImage);
+        View view = holder.itemView;
+
+        TextView textView = view.findViewById(R.id.showName);
+        ImageView imageView = view.findViewById(R.id.showImage);
 
         Show show = showsList.get(position);
         textView.setText(show.getTitle());
-        Uri imageUri = Uri.parse(Util.BASE_URL + show.getImageUrl().substring(1));
+        Uri imageUri = Util.getImageUri(show.getImageUrl());
 
-        Glide.with(holder.itemView).load(imageUri).into(imageView);
-        textView.setOnClickListener(v -> action.onItemClicked(holder.itemView.getContext(), show));
+        Util.setImage(view.getContext(), imageUri, imageView, view.findViewById(R.id.emptyPlaceholder));
+
+        holder.itemView.setOnClickListener(v -> action.onItemClicked(show.getID()));
     }
 
     @NonNull
@@ -50,6 +54,10 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     public void setShows(List<Show> showsList){
         this.showsList = showsList;
         notifyDataSetChanged();
+    }
+
+    public void setLayout(int layoutId){
+        this.chosenLayout = layoutId;
     }
 
     @Override
@@ -65,6 +73,6 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     }
 
     public interface OnItemClickAction {
-        void onItemClicked(Context context, Show show);
+        void onItemClicked(String showID);
     }
 }

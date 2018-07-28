@@ -1,4 +1,4 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,9 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import srsen.martin.infinum.co.hw3_and_on.R;
+import srsen.martin.infinum.co.hw3_and_on.Util;
+import srsen.martin.infinum.co.hw3_and_on.models.Episode;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -74,7 +78,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
 
         if(savedInstanceState != null)  restoreState(savedInstanceState);
 
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.addEpisodeToolbar);
+        Toolbar toolbar = findViewById(R.id.addEpisodeToolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> onBackPressed());
     }
@@ -88,7 +92,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
 
         if(selectedSeason == 0) return;
         chosenEpisodeSeason.setText(
-                String.format(getString(R.string.episode_shower), selectedSeason, selectedEpisode)
+                String.format(getString(R.string.episode_shower), selectedSeason + "", selectedEpisode + "")
         );
     }
 
@@ -102,7 +106,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
             return;
         }
 
-        Episode episode = new Episode(name, description, selectedSeason, selectedEpisode, imageUri);
+        Episode episode = new Episode(null, name, description, selectedSeason + "", selectedEpisode + "", imageUri.toString(), null);
         Intent intent = new Intent();
         intent.putExtra(EXTRA_EPISODE, episode);
         setResult(RESULT_OK, intent);
@@ -247,7 +251,7 @@ public class AddEpisodeActivity extends AppCompatActivity {
         selectedEpisode = episodePicker.getValue();
 
         chosenEpisodeSeason.setText(
-                String.format(getString(R.string.episode_shower), selectedSeason, selectedEpisode)
+                String.format(getString(R.string.episode_shower), selectedSeason + "", selectedEpisode + "")
         );
 
         dialog.dismiss();

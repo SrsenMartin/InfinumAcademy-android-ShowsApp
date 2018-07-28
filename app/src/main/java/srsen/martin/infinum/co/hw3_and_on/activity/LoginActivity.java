@@ -1,4 +1,4 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
+import srsen.martin.infinum.co.hw3_and_on.R;
+import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Token;
 import srsen.martin.infinum.co.hw3_and_on.models.User;

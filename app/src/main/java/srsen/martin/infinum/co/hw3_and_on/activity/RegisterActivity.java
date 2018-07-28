@@ -1,4 +1,4 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -16,10 +16,10 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.models.User;
-import srsen.martin.infinum.co.hw3_and_on.ApiService;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -87,9 +87,12 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 Util.hideProgress(progressDialog);
 
-                if(response.isSuccessful()){
+                if(response.code() == 201){
                     Toast.makeText(RegisterActivity.this, getString(R.string.new_user_200), Toast.LENGTH_SHORT).show();
                     finish();
+                }else if(response.isSuccessful()){
+                    Toast.makeText(RegisterActivity.this, R.string.email_exists, Toast.LENGTH_LONG).show();
+                    return;
                 }else{
                     Toast.makeText(RegisterActivity.this, R.string.unable_register, Toast.LENGTH_LONG).show();
                 }

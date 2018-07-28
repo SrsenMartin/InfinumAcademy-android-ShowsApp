@@ -1,4 +1,4 @@
-package srsen.martin.infinum.co.hw3_and_on;
+package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import srsen.martin.infinum.co.hw3_and_on.R;
+import srsen.martin.infinum.co.hw3_and_on.models.Episode;
 
 public class EpisodeDetailsActivity extends AppCompatActivity {
 
@@ -55,7 +57,7 @@ public class EpisodeDetailsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(showName);
 
         Glide.with(this).load(episode.getImageUri()).into(detailsImage);
-        detailsName.setText(episode.getName());
+        detailsName.setText(episode.getTitle());
         detailsDesctiption.setText(episode.getDescription());
         detailsEpisode.setText(String.format(getString(R.string.episode_shower), episode.getSeason(), episode.getEpisode()));
     }
