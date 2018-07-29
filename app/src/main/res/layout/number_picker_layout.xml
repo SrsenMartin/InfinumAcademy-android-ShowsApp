@@ -58,11 +58,8 @@
 
     <Button
         android:id="@+id/savePickedEpisode"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
+        style="@style/ButtonStyle"
         android:text="@string/save"
-        android:textColor="@color/white"
-        android:background="@color/baseColor"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp" />
 </LinearLayout>

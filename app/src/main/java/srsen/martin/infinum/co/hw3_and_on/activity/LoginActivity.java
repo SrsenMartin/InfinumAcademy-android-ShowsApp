@@ -1,6 +1,7 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,12 +17,12 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Token;
 import srsen.martin.infinum.co.hw3_and_on.models.User;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
 
     public static final String SHARED_PREFERENCES_KEY = "login_shared_prederences";
-    private static final String SHARED_PREFERENCES_TOKEN_KEY = "login_token";
+    public static final String SHARED_PREFERENCES_TOKEN_KEY = "login_token";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        checkIfRemember();
-
         apiService = Util.initApiService();
-    }
-
-    private void checkIfRemember(){
-        if(!sharedPreferences.contains(SHARED_PREFERENCES_TOKEN_KEY))   return;
-
-        String token = sharedPreferences.getString(SHARED_PREFERENCES_TOKEN_KEY, null);
-        logIn();
     }
 
     @OnClick(R.id.loginButton)
@@ -105,11 +97,10 @@ public class LoginActivity extends AppCompatActivity {
     private void logIn(){
         Intent intent = MainActivity.newIntentInstance(LoginActivity.this);
         startActivity(intent);
+        finish();
     }
 
     private void checkCheckBoxState(String token){
-        resetFields();
-
         if(!rememberCheckBox.isChecked())   return;
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -118,15 +109,14 @@ public class LoginActivity extends AppCompatActivity {
         rememberCheckBox.setChecked(false);
     }
 
-    private void resetFields(){
-        emailEdit.getEditText().setText("");
-        passwordEdit.getEditText().setText("");
-        emailEdit.getEditText().requestFocus();
-    }
-
     @OnClick(R.id.createAccount)
     void onCreateAccountClicked(){
         Intent intent = RegisterActivity.newIntentInstance(this);
         startActivity(intent);
+    }
+
+    public static Intent newIntentInstance(Context context){
+        Intent intent = new Intent(context, LoginActivity.class);
+        return intent;
     }
 }

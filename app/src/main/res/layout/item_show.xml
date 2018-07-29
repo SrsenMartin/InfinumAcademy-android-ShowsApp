@@ -23,7 +23,8 @@
             <ImageView
                 android:id="@+id/showImage"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:transitionName="@string/show_image"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -43,6 +44,7 @@
         android:layout_height="wrap_content"
         android:text="Zabranjena ljubav"
         android:textSize="20sp"
-        android:layout_marginTop="15dp"/>
+        android:layout_marginTop="15dp"
+        android:transitionName="@string/show_title"/>
 
 </LinearLayout>

@@ -70,5 +70,8 @@
     <string name="add_some_episodes">Add some episodes.</string>
     <string name="no_connection">Connection not provided</string>
     <string name="email_exists">Email already exists</string>
+    <string name="shows_noncap">shows</string>
+    <string name="show_image">showImage</string>
+    <string name="show_title">show title</string>
 
 </resources>

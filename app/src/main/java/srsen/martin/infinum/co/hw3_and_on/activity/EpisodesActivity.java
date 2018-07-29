@@ -25,7 +25,6 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.adapter.EpisodesAdapter;
@@ -35,6 +34,7 @@ import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Episode;
 import srsen.martin.infinum.co.hw3_and_on.models.Show;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 public class EpisodesActivity extends AppCompatActivity {
 
@@ -262,6 +262,7 @@ public class EpisodesActivity extends AppCompatActivity {
             Intent intent = EpisodeDetailsActivity.newIntentInstance(this, selectedEpisode, showTitle.getText().toString());
             startActivity(intent);
         });
+
         recyclerView.setAdapter(adapter);
     }
 

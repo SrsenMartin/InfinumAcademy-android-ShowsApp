@@ -41,7 +41,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
 
         Util.setImage(view.getContext(), imageUri, imageView, view.findViewById(R.id.emptyPlaceholder));
 
-        holder.itemView.setOnClickListener(v -> action.onItemClicked(show.getID()));
+        holder.itemView.setOnClickListener(v -> action.onItemClicked(show.getID(), imageView));
     }
 
     @NonNull
@@ -73,6 +73,6 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     }
 
     public interface OnItemClickAction {
-        void onItemClicked(String showID);
+        void onItemClicked(String showID, View sharedView);
     }
 }

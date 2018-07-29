@@ -1,5 +1,6 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
+import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.adapter.ShowsAdapter;
@@ -32,6 +32,7 @@ import srsen.martin.infinum.co.hw3_and_on.database.DatabaseCallback;
 import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Show;
+import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,10 +130,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAdapter(){
-        adapter = new ShowsAdapter(new ArrayList<>(), showID -> {
+        adapter = new ShowsAdapter(new ArrayList<>(), action(), R.layout.item_show_grid);
+    }
+
+    private ShowsAdapter.OnItemClickAction action(){
+        return (showID, sharedView) -> {
             Intent intent = EpisodesActivity.newIntentInstance(this, showID);
-            startActivity(intent);
-        }, R.layout.item_show_grid);
+
+            ActivityOptions transitionActivityOptions =
+                    ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, sharedView, getString(R.string.show_image));
+
+            startActivity(intent, transitionActivityOptions.toBundle());
+        };
     }
 
     private void initRecycler(){
@@ -167,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage(getString(R.string.log_out))
                 .setNegativeButton(getText(R.string.plain_no), null)
                 .setPositiveButton(getString(R.string.plain_yes), (dialog, which) -> {
-                    super.onBackPressed();
+                    logOutAction();
                     getSharedPreferences(LoginActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE)
                             .edit()
                             .clear()
@@ -175,6 +184,12 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .create()
                 .show();
+    }
+
+    private void logOutAction(){
+        Intent intent = LoginActivity.newIntentInstance(this);
+        startActivity(intent);
+        finish();
     }
 
     private void insertShowsDatabase(List<Show> showsList) {

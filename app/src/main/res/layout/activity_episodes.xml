@@ -29,7 +29,8 @@
                         android:id="@+id/showImage"
                         android:layout_width="match_parent"
                         android:layout_height="510dp"
-                        android:scaleType="centerCrop" />
+                        android:scaleType="centerCrop"
+                        android:transitionName="@string/show_image"/>
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -111,7 +112,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="30sp" />
+                        android:textSize="30sp"
+                        android:transitionName="@string/show_title"/>
 
                     <TextView
                         android:id="@+id/showDescription"
