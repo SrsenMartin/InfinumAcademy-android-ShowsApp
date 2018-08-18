@@ -10,5 +10,9 @@ public interface ShowsRepository {
     void getShows(DatabaseCallback<List<Show>> callback);
     void insertShows(List<Show> shows, DatabaseCallback<Void> callback);
     void getShow(String showId, DatabaseCallback<Show> callback);
-    void insertShow(Show show, DatabaseCallback<Void> callback);
+
+    void updateShowDescription(String showDescription, String showId, DatabaseCallback<Void> callback);
+
+    void updateLikeStatus(Boolean status, int newLikes, String showId, DatabaseCallback<Void> callback);
+    void getLikeStatus(String showId, DatabaseCallback<Boolean> callback);
 }

@@ -15,12 +15,18 @@ public interface ShowsDao {
     @Query("SELECT * FROM show")
     List<Show> getAll();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<Show> showList);
 
     @Query("SELECT * FROM show WHERE ID = :showId")
     Show getShow(String showId);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertShow(Show show);
+    @Query("UPDATE show SET description = :description WHERE ID = :showId")
+    void updateShowDescription(String description, String showId);
+
+    @Query("UPDATE show SET likeStatus = :status, likes = :newLikes WHERE ID = :showId")
+    void updateLikeStatus(Boolean status, int newLikes, String showId);
+
+    @Query("SELECT likeStatus FROM show WHERE ID = :showId")
+    Boolean getLikeStatus(String showId);
 }

@@ -7,13 +7,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -29,19 +29,30 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import srsen.martin.infinum.co.hw3_and_on.BuildConfig;
+import srsen.martin.infinum.co.hw3_and_on.Provider;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
+import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Episode;
+import srsen.martin.infinum.co.hw3_and_on.models.MediaResponse;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
 public class AddEpisodeActivity extends AppCompatActivity {
 
+    public static final String EXTRA_SHOW_ID = "extra_show_id";
+
     @BindView(R.id.nameEdit)
-    EditText nameEdit;
+    TextInputLayout nameEdit;
 
     @BindView(R.id.descriptionEdit)
-    EditText descriptionEdit;
+    TextInputLayout descriptionEdit;
 
     @BindView(R.id.saveButton)
     Button saveButton;
@@ -59,6 +70,9 @@ public class AddEpisodeActivity extends AppCompatActivity {
     private int selectedSeason;
     private Uri imageUri;
     private boolean imageSet;
+
+    private String showId;
+    private File imageFile;
 
     public static final String EXTRA_EPISODE = "srsen.martin.infinum.co.episode";
     public static final int REQUEST_CODE_TAKE_IMAGE = 199;
@@ -81,6 +95,22 @@ public class AddEpisodeActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.addEpisodeToolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(view -> onBackPressed());
+
+        showId = getShowId();
+    }
+
+    private String getShowId(){
+        checkExtras();
+
+        showId = getIntent().getStringExtra(EXTRA_SHOW_ID);
+        return showId;
+    }
+
+    private void checkExtras() {
+        if(getIntent() == null || getIntent().getStringExtra(EXTRA_SHOW_ID) == null){
+            Toast.makeText(this, getString(R.string.id_extra), Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void restoreState(Bundle savedInstanceState){
@@ -98,20 +128,96 @@ public class AddEpisodeActivity extends AppCompatActivity {
 
     @OnClick(R.id.saveButton)
     void saveAction() {
-        String name = nameEdit.getText().toString();
-        String description = descriptionEdit.getText().toString();
+        String name = nameEdit.getEditText().getText().toString();
+        String description = descriptionEdit.getEditText().getText().toString();
 
-        if(name.isEmpty() || description.isEmpty() || chosenEpisodeSeason.getText().equals("Unknown") || !imageSet){
+        if(!checkEditText(name, description) || chosenEpisodeSeason.getText().equals("Unknown") || !imageSet){
             Toast.makeText(this, getString(R.string.empty_fields), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Episode episode = new Episode(null, name, description, selectedSeason + "", selectedEpisode + "", imageUri.toString(), null);
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_EPISODE, episode);
-        setResult(RESULT_OK, intent);
+        if(!Util.isInternetAvailable(this)){
+            Toast.makeText(this, "Connection needed to add episode", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        finish();
+        Episode episode = new Episode(null, name, description, selectedSeason + "", selectedEpisode + "", imageUri.toString(), showId);
+        addEpisodeInternet(episode);
+    }
+
+    private void addEpisodeInternet(Episode episode){
+        Util.showProgress(this, null, getString(R.string.episode_add), true, false);
+
+        if(imageFile == null)   imageFile = new File(Util.getPath(this, imageUri));
+
+        Provider.getApiService().uploadMedia(Provider.getToken(this), RequestBody.create(MediaType.parse("image/jpg"), imageFile))
+                .enqueue(new Callback<Data<MediaResponse>>() {
+                    @Override
+                    public void onResponse(Call<Data<MediaResponse>> call, Response<Data<MediaResponse>> response) {
+                        if(!response.isSuccessful()){
+                            Util.hideProgress();
+                            Util.showError(AddEpisodeActivity.this, getString(R.string.upload_image));
+                            return;
+                        }
+
+                        String mediaId = response.body().getData().getMediaId();
+                        episode.setMediaId(mediaId);
+
+                        uploadEpisode(episode);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Data<MediaResponse>> call, Throwable t) {
+                        Util.hideProgress();
+                        Util.showError(AddEpisodeActivity.this, t.getMessage());
+                    }
+                });
+    }
+
+    private void uploadEpisode(Episode episode){
+        Provider.getApiService().addEpisode(Provider.getToken(this), episode).enqueue(new Callback<Data<Episode>>() {
+            @Override
+            public void onResponse(Call<Data<Episode>> call, Response<Data<Episode>> response) {
+                Util.hideProgress();
+
+                if(!response.isSuccessful()){
+                    Util.showError(AddEpisodeActivity.this, getString(R.string.add_episode));
+                }else{
+                    Episode returnEpisode = response.body().getData();
+                    Intent intent = new Intent();
+                    intent.putExtra(EXTRA_EPISODE, returnEpisode);
+                    setResult(RESULT_OK, intent);
+
+                    finish();
+                    Toast.makeText(AddEpisodeActivity.this, getString(R.string.episode_success), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Data<Episode>> call, Throwable t) {
+                Util.showError(AddEpisodeActivity.this, getString(R.string.add_episode));
+                Util.hideProgress();
+            }
+        });
+    }
+
+    private boolean checkEditText(String name, String description){
+        boolean validName = !name.isEmpty();
+        boolean validDescription = Util.isValidDescription(description);
+
+        if(validName){
+            nameEdit.setError(null);
+        }else{
+            nameEdit.setError(getString(R.string.episode_empty_message));
+        }
+
+        if(validDescription){
+            descriptionEdit.setError(null);
+        }else{
+            descriptionEdit.setError("Description must have at least 50 characters");
+        }
+
+        return validName && validDescription;
     }
 
     @OnClick(R.id.addPhotoArea)
@@ -172,17 +278,16 @@ public class AddEpisodeActivity extends AppCompatActivity {
             return;
         }
 
-        File photoFile = null;
         try {
-            photoFile = Util.createImageFile(this);
+            imageFile = Util.createImageFile(this);
         } catch (IOException ex) {
             Toast.makeText(this, R.string.error_file, Toast.LENGTH_SHORT).show();
             return;
         }
 
         imageUri = FileProvider.getUriForFile(this,
-                "srsen.martin.infinum.co.hw3_and_on.fileprovider",
-                photoFile);
+                BuildConfig.APPLICATION_ID,
+                imageFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 
         startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE);
@@ -192,11 +297,11 @@ public class AddEpisodeActivity extends AppCompatActivity {
         if(!Util.askPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.external_storage_permission,
                 REQUEST_CODE_PERMISSION_EXTERNAL_STORAGE)) return;
 
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
 
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_CHOOSE_IMAGE);
+        startActivityForResult(intent, REQUEST_CODE_CHOOSE_IMAGE);
     }
 
     @Override
@@ -257,8 +362,10 @@ public class AddEpisodeActivity extends AppCompatActivity {
         dialog.dismiss();
     }
 
-    public static Intent newIntentInstance(Context context){
+    public static Intent newIntentInstance(Context context, String showId){
         Intent intent = new Intent(context, AddEpisodeActivity.class);
+        intent.putExtra(EXTRA_SHOW_ID, showId);
+
         return intent;
     }
 
@@ -268,8 +375,8 @@ public class AddEpisodeActivity extends AppCompatActivity {
     }
 
     private void checkToGoBack(){
-        String name = nameEdit.getText().toString();
-        String description = descriptionEdit.getText().toString();
+        String name = nameEdit.getEditText().getText().toString();
+        String description = descriptionEdit.getEditText().getText().toString();
 
         if(name.isEmpty() && description.isEmpty() && chosenEpisodeSeason.getText().equals("Unknown") && !imageSet){
             super.onBackPressed();

@@ -27,13 +27,12 @@ public class Show {
     @ColumnInfo(name = "likes")
     private int likes;
 
-    @SerializedName("dislikesCount")
-    @ColumnInfo(name = "dislikes")
-    private int dislikes;
-
     @SerializedName("description")
     @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "likeStatus")
+    private Boolean liked;
 
     public Show(@NonNull String ID, String title, String imageUrl, int likes, String description) {
         this.ID = ID;
@@ -83,11 +82,11 @@ public class Show {
         this.description = description;
     }
 
-    public int getDislikes() {
-        return dislikes;
+    public Boolean getLiked() {
+        return liked;
     }
 
-    public void setDislikes(int dislikes) {
-        this.dislikes = dislikes;
+    public void setLiked(Boolean liked) {
+        this.liked = liked;
     }
 }

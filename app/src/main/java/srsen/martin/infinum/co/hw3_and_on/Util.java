@@ -5,11 +5,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -29,34 +32,16 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.EpisodesRepository;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.EpisodesRepositoryImpl;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepositoryImpl;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
-
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class Util {
 
     public static final String BASE_URL = "https://api.infinum.academy/";
 
-    private static final String SEPARATOR = "ß-//-";
-    private static final String NEWLINE_SEPARATOR = "ß-ß--";
-
     private static final Pattern email_regex_pattern = Pattern.compile(
             "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"
     );
-
-    private static ApiService apiService;
-    private static ShowsRepository showsRepository;
-    private static EpisodesRepository episodesRepository;
     private static Dialog progressDialog;
-
 
     public static boolean isInternetAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -69,54 +54,7 @@ public class Util {
     }
 
     public static Uri getImageUri(String imagePartUri){
-        return Uri.parse(Util.BASE_URL + imagePartUri.substring(1));
-    }
-
-    public static OkHttpClient createOkHttpClient() {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
-    }
-
-    public static ApiService initApiService(){
-        if(apiService == null){
-            apiService = getApiService();
-        }
-
-        return apiService;
-    }
-
-    public static ShowsRepository initShowsRepository(Context context){
-        if(showsRepository == null){
-            showsRepository = new ShowsRepositoryImpl(context);
-        }
-
-        return showsRepository;
-    }
-
-    public static EpisodesRepository initEpisodesRepository(Context context){
-        if(episodesRepository == null){
-            episodesRepository = new EpisodesRepositoryImpl(context);
-        }
-
-        return episodesRepository;
-    }
-
-    private static ApiService getApiService() {
-        return new Retrofit.Builder()
-                .baseUrl(Util.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(createOkHttpClient())
-                .build()
-                .create(ApiService.class);
-    }
-
-    public static void hideProgress(Dialog progressDialog) {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
+        return Uri.parse(Util.BASE_URL + imagePartUri);
     }
 
     public static void setImage(Context context, Uri uri, ImageView container, View defaultView){
@@ -140,8 +78,14 @@ public class Util {
         }).into(container);
     }
 
-    public static Dialog showProgress(Context context, String title, String message, boolean indeterminate, boolean cencelable) {
-        return ProgressDialog.show(context, title, message, indeterminate, cencelable);
+    public static void showProgress(Context context, String title, String message, boolean indeterminate, boolean cencelable) {
+        progressDialog = ProgressDialog.show(context, title, message, indeterminate, cencelable);
+    }
+
+    public static void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     public static void showError(Context context, String title) {
@@ -204,7 +148,7 @@ public class Util {
 
     public static File createImageFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = String.format("JPEG_%s_", timeStamp);
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,
@@ -229,4 +173,30 @@ public class Util {
         return true;
     }
 
+    public static boolean isValidDescription(String description){
+        if(description.length() < 50)   return false;
+
+        return true;
+    }
+
+    public static String getPath(Context context, Uri uri) {
+        String completeID = DocumentsContract.getDocumentId(uri);
+        String id = completeID.split(":")[1];
+
+        String[] column = { MediaStore.Images.Media.DATA };
+        String sel = MediaStore.Images.Media._ID + "=?";
+
+        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        column, sel, new String[]{id}, null);
+
+        int index = cursor.getColumnIndex(column[0]);
+
+        String path = null;
+        if (cursor.moveToFirst()) {
+            path = cursor.getString(index);
+        }
+
+        cursor.close();
+        return path;
+    }
 }

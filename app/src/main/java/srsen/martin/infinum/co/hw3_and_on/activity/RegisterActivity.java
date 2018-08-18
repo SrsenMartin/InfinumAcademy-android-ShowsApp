@@ -1,6 +1,5 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
+import srsen.martin.infinum.co.hw3_and_on.Provider;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.models.User;
@@ -35,9 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
     @BindView(R.id.registerToolbar)
     Toolbar toolbar;
 
-    private ApiService apiService;
-    private Dialog progressDialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +42,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-
-        apiService = Util.initApiService();
     }
 
     @OnClick(R.id.registerButton)
@@ -79,13 +73,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser(User user){
-        progressDialog = Util.showProgress(this,
-                getString(R.string.register), getString(R.string.loading), true, false);
+        Util.showProgress(this, getString(R.string.register), getString(R.string.loading), true, false);
 
-        apiService.registerUser(user).enqueue(new Callback<Void>() {
+        Provider.getApiService().registerUser(user).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
 
                 if(response.code() == 201){
                     Toast.makeText(RegisterActivity.this, getString(R.string.new_user_200), Toast.LENGTH_SHORT).show();
@@ -100,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
                 Util.showError(RegisterActivity.this, getString(R.string.register));
             }
         });

@@ -1,7 +1,6 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import srsen.martin.infinum.co.hw3_and_on.Provider;
 import srsen.martin.infinum.co.hw3_and_on.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -69,12 +69,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void logIn(){
-        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        if(!sharedPreferences.contains(LoginActivity.SHARED_PREFERENCES_TOKEN_KEY)){
-            loginWithDetails();
-        }else{
-            String token = sharedPreferences.getString(LoginActivity.SHARED_PREFERENCES_TOKEN_KEY, null);
+        if(Provider.getRememberState(this)){
+            String token = Provider.getToken(this);
             loginWithToken(token);
+        }else{
+            loginWithDetails();
         }
 
         finish();

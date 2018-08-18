@@ -43,6 +43,9 @@ public class Episode implements Parcelable {
     @ColumnInfo(name = "showId")
     private String showId;
 
+    @SerializedName("mediaId")
+    private String mediaId;
+
     public Episode(String id, String title, String description, String season, String episode, String imageUri, String showId){
         this.title = title;
         this.description = description;
@@ -116,6 +119,14 @@ public class Episode implements Parcelable {
 
     public void setShowId(String showId) {
         this.showId = showId;
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

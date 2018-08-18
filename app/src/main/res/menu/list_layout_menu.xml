@@ -4,9 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/switch_view"
-        android:id="@+id/switchLayoutIcon"
+        android:title="@string/log_out"
+        android:id="@+id/logOutItem"
         app:showAsAction="always"
-        android:icon="@drawable/list_icon" />
+        android:icon="@drawable/logout_icon" />
 
 </menu>

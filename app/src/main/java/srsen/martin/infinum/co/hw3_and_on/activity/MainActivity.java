@@ -1,11 +1,11 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
 import android.app.ActivityOptions;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,17 +24,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import srsen.martin.infinum.co.hw3_and_on.Provider;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.adapter.ShowsAdapter;
 import srsen.martin.infinum.co.hw3_and_on.database.DatabaseCallback;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Show;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,10 +47,13 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
 
+    @BindView(R.id.changeLayoutButton)
+    FloatingActionButton changeLayoutButton;
+
+    @BindView(R.id.listEmptyLayout)
+    ViewGroup emptyShower;
+
     private ShowsAdapter adapter;
-    private Dialog progressDialog;
-    private ApiService apiService;
-    private ShowsRepository showsRepository;
 
     private LinearLayoutManager linearManager;
     private GridLayoutManager gridManager;
@@ -62,9 +67,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-
-        apiService = Util.initApiService();
-        showsRepository = Util.initShowsRepository(this);
         initRecycler();
 
         getShows();
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadShowsFromDatabase(){
-        showsRepository.getShows(new DatabaseCallback<List<Show>>() {
+        Provider.getShowsRepository(this).getShows(new DatabaseCallback<List<Show>>() {
             @Override
             public void onSuccess(List<Show> data) {
                 if (data.isEmpty()) {
@@ -100,13 +102,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadShowsFromInternet(){
-        progressDialog = Util.showProgress(this,
-                getString(R.string.shows), getString(R.string.loading), true, false);
+        Util.showProgress(this, getString(R.string.shows), getString(R.string.loading), true, false);
 
-        apiService.getShows().enqueue(new Callback<Data<List<Show>>>() {
+        Provider.getApiService().getShows().enqueue(new Callback<Data<List<Show>>>() {
             @Override
             public void onResponse(@NonNull Call<Data<List<Show>>> call, @NonNull Response<Data<List<Show>>> response) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
 
                 if(response.isSuccessful()){
                     List<Show> showsList = response.body().getData();
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Data<List<Show>>> call, @NonNull Throwable t) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
                 Util.showError(MainActivity.this, getString(R.string.shows));
             }
         });
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setShows(List<Show> showsList){
         adapter.setShows(showsList);
+        emptyShower.setVisibility(View.INVISIBLE);
     }
 
     private void initAdapter(){
@@ -174,13 +176,10 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.log_out_title)
                 .setMessage(getString(R.string.log_out))
-                .setNegativeButton(getText(R.string.plain_no), null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setPositiveButton(getString(R.string.plain_yes), (dialog, which) -> {
                     logOutAction();
-                    getSharedPreferences(LoginActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE)
-                            .edit()
-                            .clear()
-                            .apply();
+                    Provider.clearToken(MainActivity.this);
                 })
                 .create()
                 .show();
@@ -193,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void insertShowsDatabase(List<Show> showsList) {
-        showsRepository.insertShows(showsList, new DatabaseCallback<Void>() {
+        Provider.getShowsRepository(this).insertShows(showsList, new DatabaseCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
             }
@@ -220,11 +219,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        logOut();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_layout_menu, menu);
         return true;
@@ -233,19 +227,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.switchLayoutIcon:
-                if(linear){
-                    linear = false;
-                    item.setIcon(R.drawable.list_icon);
-                }else{
-                    linear = true;
-                    item.setIcon(R.drawable.grid_icon);
-                }
-
-                setLayout();
+            case R.id.logOutItem:
+                logOut();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.changeLayoutButton)
+    void changeLayout(){
+        if(linear){
+            linear = false;
+            changeLayoutButton.setImageResource(R.drawable.ic_list_icon_white);
+        }else{
+            linear = true;
+            changeLayoutButton.setImageResource(R.drawable.ic_grid_white);
+        }
+
+        setLayout();
     }
 
     public static Intent newIntentInstance(Context context){

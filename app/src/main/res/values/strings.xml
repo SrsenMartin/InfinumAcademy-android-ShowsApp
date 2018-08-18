@@ -11,7 +11,7 @@
     <string name="Add">Add</string>
     <string name="id_extra">Activity takes show ID as extra</string>
     <string name="not_contained_show">Show not contained in database</string>
-    <string name="empty_fields">None of the fields can be empty or unknown</string>
+    <string name="empty_fields">None of required fields can be empty or invalid</string>
     <string name="back_action">You have unsaved changes, are you sure you want to go back?</string>
     <string name="no">Edit episode</string>
     <string name="yes">Go back</string>
@@ -21,7 +21,7 @@
     <string name="title">Title</string>
     <string name="season">Season</string>
     <string name="episode">Episode</string>
-    <string name="episode_shower">Season %s, Episode %s</string>
+    <string name="episode_shower">S%s E%s</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="unable_to_photo">Unable to load image</string>
@@ -73,5 +73,27 @@
     <string name="shows_noncap">shows</string>
     <string name="show_image">showImage</string>
     <string name="show_title">show title</string>
+    <string name="cancel">Cancel</string>
+    <string name="update_status">Update like status</string>
+    <string name="internt_like">Internet needed to update show like status</string>
+    <string name="wasnt_liked">Show wasn\'t liked</string>
+    <string name="wasnt_disliked">Show wasn\'t disliked</string>
+    <string name="upload_photo">Upload photo</string>
+    <string name="episode_title">Episode title</string>
+    <string name="episode_description">Episode description</string>
+    <string name="episode_empty_message">Episode name can\'t be empty</string>
+    <string name="episode_add">Adding episode</string>
+    <string name="upload_image">Upload image</string>
+    <string name="episode_success">Episode added successfully</string>
+    <string name="comments">Comments</string>
+    <string name="id_extra_episode">Activity takes episode ID as extra</string>
+    <string name="comments_empty_text">Sorry, we don\'t have comments yet.\nBe first who will write a review.</string>
+    <string name="add_comment">Add a comment...</string>
+    <string name="post">Post</string>
+    <string name="invalid_comment">Empty comment can\'t be posted.</string>
+    <string name="unable_comments">Unable to load comments</string>
+    <string name="unable_post_comment">Unable to post comment</string>
+    <string name="comment_posted">Comment successfully posted</string>
+    <string name="connection_comment_post">Connection needed to post comment</string>
 
 </resources>

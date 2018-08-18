@@ -1,15 +1,15 @@
 package srsen.martin.infinum.co.hw3_and_on.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,16 +25,14 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import srsen.martin.infinum.co.hw3_and_on.Provider;
 import srsen.martin.infinum.co.hw3_and_on.R;
 import srsen.martin.infinum.co.hw3_and_on.Util;
 import srsen.martin.infinum.co.hw3_and_on.adapter.EpisodesAdapter;
 import srsen.martin.infinum.co.hw3_and_on.database.DatabaseCallback;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.EpisodesRepository;
-import srsen.martin.infinum.co.hw3_and_on.database.repository.ShowsRepository;
 import srsen.martin.infinum.co.hw3_and_on.models.Data;
 import srsen.martin.infinum.co.hw3_and_on.models.Episode;
 import srsen.martin.infinum.co.hw3_and_on.models.Show;
-import srsen.martin.infinum.co.hw3_and_on.networking.ApiService;
 
 public class EpisodesActivity extends AppCompatActivity {
 
@@ -43,9 +41,6 @@ public class EpisodesActivity extends AppCompatActivity {
 
     @BindView(R.id.showImage)
     ImageView showImage;
-
-    @BindView(R.id.showTitle)
-    TextView showTitle;
 
     @BindView(R.id.showDescription)
     TextView showDescription;
@@ -62,18 +57,23 @@ public class EpisodesActivity extends AppCompatActivity {
     @BindView(R.id.likesCount)
     TextView likesCount;
 
-    @BindView(R.id.dislikesCount)
-    TextView dislikesCount;
+    @BindView(R.id.episodesToolbar)
+    Toolbar toolbar;
 
-    @BindView(R.id.episodesSwiper)
-    SwipeRefreshLayout episodesSwiper;
+    @BindView(R.id.likeIcon)
+    ImageView likeIcon;
+
+    @BindView(R.id.dislikeIcon)
+    ImageView dislikeIcon;
+
+//    @BindView(R.id.episodesSwiper)
+//    SwipeRefreshLayout episodesSwiper;
+
+    @BindView(R.id.collapseToolbar)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     private EpisodesAdapter adapter;
     private String showId;
-    private Dialog progressDialog;
-    private ApiService apiService;
-    private ShowsRepository showsRepository;
-    private EpisodesRepository episodesRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,20 +81,15 @@ public class EpisodesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_episodes);
         ButterKnife.bind(this);
 
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.episodesToolbar);
         toolbar.setNavigationOnClickListener(view -> onBackPressed());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        apiService = Util.initApiService();
-        showsRepository = Util.initShowsRepository(this);
-        episodesRepository = Util.initEpisodesRepository(this);
-        setSwiperListener();
+        //setSwiperListener();
 
         showId = getShowId();
         if(showId == null)  return;
 
         setShowDetails();
-        setEpisodeDetails();
     }
 
     private String getShowId(){
@@ -120,13 +115,12 @@ public class EpisodesActivity extends AppCompatActivity {
     }
 
     private void loadShowDetailsInternet(){
-        progressDialog = Util.showProgress(this,
-                null, getString(R.string.loading), true, false);
+        Util.showProgress(this,null, getString(R.string.loading), true, false);
 
-        apiService.getShowDetails(showId).enqueue(new Callback<Data<Show>>() {
+        Provider.getApiService().getShowDetails(showId).enqueue(new Callback<Data<Show>>() {
             @Override
             public void onResponse(@NonNull Call<Data<Show>> call, @NonNull Response<Data<Show>> response) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
 
                 if(response.isSuccessful()){
                     Show show = response.body().getData();
@@ -139,17 +133,16 @@ public class EpisodesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Data<Show>> call, @NonNull Throwable t) {
-                Util.hideProgress(progressDialog);
+                Util.hideProgress();
                 Util.showError(EpisodesActivity.this, getString(R.string.shows));
             }
         });
     }
 
     private void saveShowDetailsIntoDatabase(Show show){
-        showsRepository.insertShow(show, new DatabaseCallback<Void>() {
+        Provider.getShowsRepository(this).updateShowDescription(show.getDescription(), show.getID(), new DatabaseCallback<Void>() {
             @Override
-            public void onSuccess(Void data) {
-            }
+            public void onSuccess(Void data) {}
 
             @Override
             public void onError(Throwable t) {
@@ -159,7 +152,7 @@ public class EpisodesActivity extends AppCompatActivity {
     }
 
     private void loadShowDetailsDatabase(){
-        showsRepository.getShow(showId, new DatabaseCallback<Show>() {
+        Provider.getShowsRepository(this).getShow(showId, new DatabaseCallback<Show>() {
             @Override
             public void onSuccess(Show data) {
                 setShow(data);
@@ -176,11 +169,13 @@ public class EpisodesActivity extends AppCompatActivity {
         Uri imageUri = Util.getImageUri(show.getImageUrl());
         Util.setImage(this, imageUri, showImage, findViewById(R.id.emptyPlaceholder));
 
-        showTitle.setText(show.getTitle());
         showDescription.setText(show.getDescription());
+        collapsingToolbarLayout.setTitle(show.getTitle());
 
         likesCount.setText(show.getLikes() + "");
-        dislikesCount.setText(show.getDislikes() + "");
+        likeStateAction((status) ->  setLikeIcon(status));
+
+        setEpisodeDetails();
     }
 
     private void setEpisodeDetails(){
@@ -192,9 +187,13 @@ public class EpisodesActivity extends AppCompatActivity {
     }
 
     private void loadEpisodesFromInternet(){
-        apiService.getEpisodes(showId).enqueue(new Callback<Data<List<Episode>>>() {
+        Util.showProgress(this,null, getString(R.string.loading), true, false);
+
+        Provider.getApiService().getEpisodes(showId).enqueue(new Callback<Data<List<Episode>>>() {
             @Override
             public void onResponse(@NonNull Call<Data<List<Episode>>> call, @NonNull Response<Data<List<Episode>>> response) {
+                Util.hideProgress();
+
                 if(response.isSuccessful()){
                     List<Episode> episodes = response.body().getData();
 
@@ -207,13 +206,14 @@ public class EpisodesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Data<List<Episode>>> call, @NonNull Throwable t) {
+                Util.hideProgress();
                 Util.showError(EpisodesActivity.this, getString(R.string.episode));
             }
         });
     }
 
     private void loadEpisodesFromDatabase(){
-        episodesRepository.getEpisodes(showId, new DatabaseCallback<List<Episode>>() {
+        Provider.getEpisodesRepository(this).getEpisodes(showId, new DatabaseCallback<List<Episode>>() {
             @Override
             public void onSuccess(List<Episode> data) {
                 if (data.isEmpty()) {
@@ -254,12 +254,15 @@ public class EpisodesActivity extends AppCompatActivity {
         }
 
         adapter.addEpisode(episode);
-        refreshCounter();
+
+        List<Episode> episodeCont = new ArrayList<>();
+        episodeCont.add(episode);
+        insertEpisodesDatabase(episodeCont);
     }
 
     private void initAdapter(List<Episode> episodeList){
         adapter = new EpisodesAdapter(episodeList, selectedEpisode -> {
-            Intent intent = EpisodeDetailsActivity.newIntentInstance(this, selectedEpisode, showTitle.getText().toString());
+            Intent intent = EpisodeDetailsActivity.newIntentInstance(this, selectedEpisode);
             startActivity(intent);
         });
 
@@ -267,7 +270,7 @@ public class EpisodesActivity extends AppCompatActivity {
     }
 
     private void insertEpisodesDatabase(List<Episode> episodesList) {
-        episodesRepository.insertEpisodes(episodesList, new DatabaseCallback<Void>() {
+        Provider.getEpisodesRepository(this).insertEpisodes(episodesList, new DatabaseCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
             }
@@ -282,18 +285,130 @@ public class EpisodesActivity extends AppCompatActivity {
 
     @OnClick(R.id.addEpisodeButton)
     void createNewEpisode(){
-        Intent intent = AddEpisodeActivity.newIntentInstance(this);
+        Intent intent = AddEpisodeActivity.newIntentInstance(this, showId);
         startActivityForResult(intent, REQUEST_CODE_EPISODE);
     }
 
     @OnClick(R.id.likeIcon)
     void likeClicked(){
-        Toast.makeText(this, "Like clicked", Toast.LENGTH_SHORT).show();
+        likeStateAction(status -> {
+                if(status == null){
+                    likeUpdateAction(true, 1);
+                }else if(status){
+                    likeUpdateAction(null, -1);
+                }else{
+                    likeUpdateAction(true, 2);
+                }
+        });
     }
 
     @OnClick(R.id.dislikeIcon)
     void dislikeClicked(){
-        Toast.makeText(this, "Disike clicked", Toast.LENGTH_SHORT).show();
+        likeStateAction(status -> {
+                if(status == null){
+                    likeUpdateAction(false, -1);
+                }else if(status){
+                    likeUpdateAction(false, -2);
+                }else{
+                    likeUpdateAction(null, 1);
+                }
+        });
+    }
+
+    private void likeUpdateAction(Boolean status, int increase){
+        if(!Util.isInternetAvailable(this)){
+            Toast.makeText(this, R.string.internt_like, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        int currentLikes = Integer.parseInt(likesCount.getText().toString());
+        int newLikes = currentLikes + increase;
+        likesCount.setText(Integer.toString(newLikes));
+
+        updateLikeDatabase(status, newLikes);
+        updateLikeApi(increase);
+
+        setLikeIcon(status);
+    }
+
+    private void setLikeIcon(Boolean status){
+        if(status == null){
+            likeIcon.setImageResource(R.drawable.like_icon_background);
+            dislikeIcon.setImageResource(R.drawable.dislike_icon_background);
+        }else if(status){
+            likeIcon.setImageResource(R.drawable.like_icon_background_full);
+            dislikeIcon.setImageResource(R.drawable.dislike_icon_background);
+        }else{
+            likeIcon.setImageResource(R.drawable.like_icon_background);
+            dislikeIcon.setImageResource(R.drawable.dislike_icon_background_full);
+        }
+    }
+
+    private void updateLikeDatabase(Boolean status, int newLikes){
+        Provider.getShowsRepository(this).updateLikeStatus(status, newLikes, showId, new DatabaseCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {}
+
+            @Override
+            public void onError(Throwable t) {
+                Util.showError(EpisodesActivity.this, getString(R.string.update_status));
+            }
+        });
+    }
+
+    private void updateLikeApi(int increase){
+        Util.showProgress(this, null, getString(R.string.loading), true, false);
+
+        while(increase != 0){
+            if(increase > 0){
+                --increase;
+                likeShowInternet();
+            }else{
+                ++increase;
+                dislikeShowInternet();
+            }
+        }
+    }
+
+    private void likeShowInternet(){
+        Provider.getApiService().likeShow(Provider.getToken(this), showId).enqueue(updateInternetStatusCallback(R.string.wasnt_liked));
+    }
+
+    private void dislikeShowInternet(){
+        Provider.getApiService().dislikeShow(Provider.getToken(this), showId).enqueue(updateInternetStatusCallback(R.string.wasnt_disliked));
+    }
+
+    private Callback<Void> updateInternetStatusCallback(int messageId){
+        return new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Util.hideProgress();
+
+                if(!response.isSuccessful()){
+                    Toast.makeText(EpisodesActivity.this, messageId, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Util.hideProgress();
+                Util.showError(EpisodesActivity.this, getString(R.string.update_status));
+            }
+        };
+    }
+
+    private void likeStateAction(LikeStatusUpdater updater){
+        Provider.getShowsRepository(this).getLikeStatus(showId, new DatabaseCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean data) {
+                updater.update(data);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Util.showError(EpisodesActivity.this, getString(R.string.update_status));
+            }
+        });
     }
 
     @Override
@@ -307,6 +422,20 @@ public class EpisodesActivity extends AppCompatActivity {
         }
     }
 
+//    private void setSwiperListener(){
+//        episodesSwiper.setOnRefreshListener(() -> {
+//            episodesSwiper.setRefreshing(true);
+//
+//            if(!Util.isInternetAvailable(EpisodesActivity.this)){
+//                Toast.makeText(EpisodesActivity.this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+//            }else{
+//                loadEpisodesFromInternet();
+//            }
+//
+//            episodesSwiper.setRefreshing(false);
+//        });
+//    }
+
     private void checkEmptyShowerIcon(){
         emptyShower.setVisibility(View.INVISIBLE);
     }
@@ -315,25 +444,14 @@ public class EpisodesActivity extends AppCompatActivity {
         episodesCounter.setText(adapter.getItemCount() + "");
     }
 
-    private void setSwiperListener(){
-        episodesSwiper.setOnRefreshListener(() -> {
-            episodesSwiper.setRefreshing(true);
-
-            if(!Util.isInternetAvailable(EpisodesActivity.this)){
-                Toast.makeText(EpisodesActivity.this, R.string.no_connection, Toast.LENGTH_SHORT).show();
-            }else{
-                loadShowDetailsInternet();
-                loadEpisodesFromInternet();
-            }
-
-            episodesSwiper.setRefreshing(false);
-        });
-    }
-
     public static Intent newIntentInstance(Context context, String showId){
         Intent intent = new Intent(context, EpisodesActivity.class);
         intent.putExtra(EXTRA_SHOW_ID, showId);
 
         return intent;
+    }
+
+    private interface LikeStatusUpdater{
+        void update(Boolean status);
     }
 }

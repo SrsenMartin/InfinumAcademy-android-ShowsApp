@@ -7,12 +7,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import srsen.martin.infinum.co.hw3_and_on.models.Show;
 import srsen.martin.infinum.co.hw3_and_on.database.DatabaseCallback;
+import srsen.martin.infinum.co.hw3_and_on.database.runnable.GetLikeStatusRunnable;
 import srsen.martin.infinum.co.hw3_and_on.database.runnable.GetShowRunnable;
 import srsen.martin.infinum.co.hw3_and_on.database.runnable.GetShowsRunnable;
-import srsen.martin.infinum.co.hw3_and_on.database.runnable.InsertShowRunnable;
 import srsen.martin.infinum.co.hw3_and_on.database.runnable.InsertShowsRunnable;
+import srsen.martin.infinum.co.hw3_and_on.database.runnable.UpdateLikeStatusRunnable;
+import srsen.martin.infinum.co.hw3_and_on.database.runnable.UpdateShowDescriptionRunnable;
+import srsen.martin.infinum.co.hw3_and_on.models.Show;
 
 public class ShowsRepositoryImpl implements ShowsRepository {
 
@@ -44,9 +46,21 @@ public class ShowsRepositoryImpl implements ShowsRepository {
     }
 
     @Override
-    public void insertShow(Show show, DatabaseCallback<Void> callback){
+    public void updateShowDescription(String showDescription, String showId, DatabaseCallback<Void> callback) {
         cancel();
-        this.task = executor.submit(new InsertShowRunnable(context, show, callback));
+        this.task = executor.submit(new UpdateShowDescriptionRunnable(context, showDescription, showId, callback));
+    }
+
+    @Override
+    public void updateLikeStatus(Boolean status, int newLikes, String showId, DatabaseCallback<Void> callback) {
+        cancel();
+        this.task = executor.submit(new UpdateLikeStatusRunnable(context, status, newLikes, showId, callback));
+    }
+
+    @Override
+    public void getLikeStatus(String showId, DatabaseCallback<Boolean> callback) {
+        cancel();
+        this.task = executor.submit(new GetLikeStatusRunnable(context, showId, callback));
     }
 
     private void cancel() {
