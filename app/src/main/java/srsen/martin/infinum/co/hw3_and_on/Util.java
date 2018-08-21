@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -38,9 +39,6 @@ public class Util {
 
     public static final String BASE_URL = "https://api.infinum.academy/";
 
-    private static final Pattern email_regex_pattern = Pattern.compile(
-            "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"
-    );
     private static Dialog progressDialog;
 
     public static boolean isInternetAvailable(Context context) {
@@ -160,9 +158,10 @@ public class Util {
     }
 
     public static boolean isValidEmail(String email){
-        Matcher emailMatcher = email_regex_pattern.matcher(email);
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        Matcher matcher = pattern.matcher(email);
 
-        if(emailMatcher.matches())  return true;
+        if(matcher.matches())  return true;
 
         return false;
     }

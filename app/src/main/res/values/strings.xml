@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hw3_and_on</string>
+    <string name="app_name">Shows</string>
     <string name="shows">Shows</string>
     <string name="noItemsString">Your list is empty</string>
     <string name="title_activity_add_episode">AddEpisodeActivity</string>

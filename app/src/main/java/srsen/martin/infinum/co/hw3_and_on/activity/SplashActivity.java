@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,6 +27,9 @@ public class SplashActivity extends AppCompatActivity {
 
     @BindView(R.id.textAnimation)
     TextView textAnimation;
+
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class SplashActivity extends AppCompatActivity {
         animation.setAnimationListener(new AnimationAdapter() {
             @Override
             public void onAnimationEnd(Animation animation) {
+                progressBar.setVisibility(View.VISIBLE);
                 new Handler().postDelayed(() -> logIn(), 2000);
             }
         });
@@ -77,6 +82,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         finish();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void loginWithDetails(){
