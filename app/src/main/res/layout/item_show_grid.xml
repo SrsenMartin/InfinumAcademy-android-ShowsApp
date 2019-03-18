@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:background="?android:attr/selectableItemBackground">
+
+<android.support.v7.widget.CardView
+    android:id="@+id/imageExists"
+    android:layout_width="160dp"
+    android:layout_height="280dp"
+    app:cardCornerRadius="8dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/showImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:transitionName="@string/show_image"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/emptyPlaceholder"
+            android:src="@drawable/ic_image_choose"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"
+            />
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_below="@id/imageExists"
+        android:id="@+id/showName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zabranjena ljubav"
+        android:textSize="14sp"
+        android:textColor="@color/textLight"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp" />
+</RelativeLayout>

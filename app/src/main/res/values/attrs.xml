@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LoginView">
+        <attr name="logoIcon" format="reference" />
+        <attr name="baseColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomButton">
+        <attr name="increaseRate" format="float"/>
+        <attr name="decreaseRate" format="float"/>
+    </declare-styleable>
+</resources>

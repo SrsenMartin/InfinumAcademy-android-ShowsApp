@@ -1,0 +1,36 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:src="@drawable/comments_shape"/>
+
+    <EditText
+        android:id="@+id/commentEditText"
+        style="@style/EditTextBaseStyle"
+        android:layout_marginStart="50dp"
+        android:hint="@string/add_comment"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:textColorHint="@color/textLight"
+        android:layout_marginEnd="105dp"
+        android:maxLines="2"/>
+
+    <TextView
+        android:id="@+id/postButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/post"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="50dp"
+        android:textColor="@color/baseColor"
+        android:textSize="16sp"/>
+</RelativeLayout>
